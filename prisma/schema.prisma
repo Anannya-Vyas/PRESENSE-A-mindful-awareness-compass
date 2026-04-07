@@ -1,0 +1,95 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name       String?
+  avatar     String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Session {
+  id          String   @id @default(cuid())
+  userId      String
+  token       String   @unique
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+  
+  @@map("sessions")
+  @@index([userId])
+}
+
+model CheckIn {
+  id          String   @id @default(cuid())
+  userId      String?
+  positionX   Float
+  positionY   Float
+  quadrant    String // 'past' | 'future' | 'internal' | 'external' | 'center'
+  distance    Float
+  nudge       String?
+  reflection  String?
+  timestamp   DateTime @default(now())
+  createdAt   DateTime @default(now())
+  
+  @@map("check_ins")
+  @@index([userId, createdAt])
+  @@index([quadrant])
+}
+
+model Stats {
+  id                  String   @id @default(cuid())
+  userId              String?
+  totalCheckIns       Int      @default(0)
+  mostFrequentQuadrant String   @default("center")
+  currentStreak        Int      @default(0)
+  longestStreak        Int      @default(0)
+  averageDistance      Float    @default(0)
+  lastCheckInAt       DateTime?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  
+  @@map("stats")
+  @@index([userId])
+}
+
+model Achievement {
+  id          String   @id @default(cuid())
+  userId      String?
+  type        String   // 'first_checkin' | 'week_streak' | 'month_streak' | '100_checkins' | 'mindful_master'
+  title       String
+  description String?
+  icon        String?
+  unlockedAt  DateTime @default(now())
+  createdAt   DateTime @default(now())
+  
+  @@map("achievements")
+  @@index([userId, type])
+}
+
+model JournalEntry {
+  id          String   @id @default(cuid())
+  userId      String?
+  title       String
+  content     String
+  mood        String?   // 'calm' | 'focused' | 'distracted' | 'anxious' | 'grateful' | 'tired'
+  tags        String[]  // JSON array of tags
+  isPrivate   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("journal_entries")
+  @@index([userId, createdAt])
+  @@index([mood])
+}
