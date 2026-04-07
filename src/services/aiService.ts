@@ -1,5 +1,5 @@
 const INVOKE_URL = "https://integrate.api.nvidia.com/v1/chat/completions";
-const API_KEY = process.env.REACT_APP_NVIDIA_API_KEY || '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';
+const API_KEY = process.env.REACT_APP_NVIDIA_API_KEY || '';
 
 export interface NudgeResponse {
   nudge: string;
